@@ -2,7 +2,7 @@
 
 Sebuah aplikasi web interaktif untuk **membangun prompt gambar terstruktur dalam bahasa Indonesia**, lalu **mengonversinya ke bahasa Inggris secara otomatis** menggunakan Gemini API. Aplikasi ini dirancang untuk **pengguna non-teknis, pendidik, dan kreator konten anak**, dengan antarmuka sederhana dan hasil siap pakai untuk AI image generator seperti Midjourney, Leonardo, atau DALL·E.
 
-🔗 [Lihat Demo (jika di-deploy)](https://xpromp.streamlit.app) *(ganti dengan link Anda)*
+🔗 [Lihat Demo ](https://xpromp.streamlit.app) *(ganti dengan link Anda)*
 
 ---
 ## ✅ Fitur Utama
