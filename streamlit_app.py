@@ -572,7 +572,7 @@ if st.session_state.get("run_apply", False):
         st.toast("Template kosong dimuat.")
     elif choice in PRESETS:
         for k,v in PRESETS[choice].items():
-            st.session_state[key] = v
+            st.session_state[k] = v
         st.toast(f"Template dimuat: {choice}")
     # Reset
     st.session_state.pop("run_apply", None)
