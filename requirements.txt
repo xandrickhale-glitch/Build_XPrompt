@@ -1,1 +1,6 @@
-streamlit
+streamlit>=1.33.0
+python-dotenv>=1.0.1
+# Prefer the newer Google GenAI SDK
+google-genai>=1.29.0,<2.0.0
+# Fallback older library (optional but handy if the above isn’t available)
+google-generativeai>=0.7.2,<1.0.0
