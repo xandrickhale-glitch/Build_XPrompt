@@ -2,17 +2,9 @@
 
 Sebuah aplikasi web interaktif untuk **membangun prompt gambar terstruktur dalam bahasa Indonesia**, lalu **mengonversinya ke bahasa Inggris secara otomatis** menggunakan Gemini API. Aplikasi ini dirancang untuk **pengguna non-teknis, pendidik, dan kreator konten anak**, dengan antarmuka sederhana dan hasil siap pakai untuk AI image generator seperti Midjourney, Leonardo, atau DALL·E.
 
-🔗 [Lihat Demo (jika di-deploy)](https://your-app-name.streamlit.app) *(ganti dengan link Anda)*
+🔗 [Lihat Demo (jika di-deploy)](https://xpromp.streamlit.app) *(ganti dengan link Anda)*
 
 ---
-
-## 📷 Tampilan Aplikasi
-![Tampilan Aplikasi](image.png)
-
-*(Catatan: Ganti `image.png` dengan screenshot aplikasi Anda saat dipublikasi)*
-
----
-
 ## ✅ Fitur Utama
 
 - **🌐 UI Bahasa Indonesia** — Mudah digunakan oleh pengguna lokal.
@@ -43,3 +35,20 @@ Sebuah aplikasi web interaktif untuk **membangun prompt gambar terstruktur dalam
 ### 1. Instal dependensi
 ```bash
 pip install streamlit google-genai python-dotenv**
+
+🤝 Kontribusi ( boleh traktir kopi | 0856 4990 5055)
+Ingin menambahkan fitur?
+
+Mode gelap
+Simpan template ke lokal
+Ekspor ke format Midjourney/Discord
+Login pengguna
+Silakan buka Pull Request atau Issue di repo ini!
+
+📄 Lisensi
+Distribusikan secara bebas. Cocok untuk proyek edukasi, non-profit, atau komersial.
+
+🙏 Terima Kasih
+Dibuat dengan ❤️ untuk kreator Indonesia.
+
+
