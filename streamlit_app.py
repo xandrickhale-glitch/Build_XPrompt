@@ -634,7 +634,7 @@ if enh_clicked:
     else:
         try:
             enhanced = _call_gemini(
-                f"Act as a senior prompt engineer. Polish the following prompt without changing structure:\n\n{base_prompt_en}",
+                f"Act as a senior prompt engineer. Polish the following prompt without changing structure:\n{base_prompt_en}",
                 model,
                 api_key or os.getenv("GEMINI_API_KEY"),
             )
@@ -649,7 +649,7 @@ if var_clicked:
     else:
         try:
             variations = _call_gemini(
-                f"Produce {n_variations} alternative prompts following the same structure and kid-safe tone:\n\n{base_prompt_en}",
+                f"Produce {n_variations} alternative prompts following the same structure and kid-safe tone:\n{base_prompt_en}",
                 model,
                 api_key or os.getenv("GEMINI_API_KEY"),
             )
