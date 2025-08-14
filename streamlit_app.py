@@ -171,7 +171,7 @@ PRESETS: Dict[str, Dict[str, str]] = {
         "Text & Effects": "‘BELAJAR BUDAYA PERTAMA DI DUNIA!’ dengan efek debu halus.",
         "Background Style": "Gurun alami, tanah merah, langit dramatis.",
         "Style & Lighting": "Fine Art Realism, oil painting texture, rim light senja, museum-grade detail."
-    }
+    },
     "Petualangan Luar Angkasa": {
         "Foreground": "Panda astronot berani melambaikan bendera di batu bulan (tengah-bawah), gurita alien kecil mengambang tanpa gravitasi di sampingnya.",
         "Midground": "Anjing robot biru melompat lambat (kiri), pesawat ruang angkasa berbentuk komet melintas; burung alien merah melayang dengan jejak debu bintang.",
