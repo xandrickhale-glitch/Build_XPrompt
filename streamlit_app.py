@@ -52,11 +52,126 @@ def _call_gemini(prompt: str, model_name: str, api_key: str) -> str:
                 raise Exception("❌ **Gagal koneksi ke Gemini.** Periksa internet atau coba lagi nanti.")
             else:
                 raise Exception(f"❌ **Gagal memanggil Gemini:**\n\n`{str(e2)}`")
-        
+                
+def get_suggested_text_effects(style_lighting: str) -> str:
+    """
+    Berikan saran otomatis untuk Text & Effects berdasarkan Style & Lighting.
+    Menyertakan kata kunci umum seperti Starburst, konfeti, bokeh, glow.
+    """
+    style = style_lighting.lower()
+
+    # Gaya Realistis / Natural / Fotografi
+    if any(k in style for k in ["photorealistic", "dslr", "8k", "natural", "realistic", "documentary", "portrait", "cinematic", "environmental", "fine art", "ethnographic"]):
+        return "Tidak ada efek tambahan. Fokus pada subjek dan lingkungan. (Contoh: bayangan alami, watermark halus)"
+
+    # Gaya Kartun / Anak-Anak / 3D
+    elif any(k in style for k in ["3d pixar", "claymation", "kawaii", "chibi", "neon", "playful", "watercolor", "gouache", "papercraft", "halftone", "comic"]):
+        return "Starburst, konfeti pelangi, bintang berkedip, neon glow, bokeh lembut, efek ledakan kecil"
+
+    # Gaya Malam / Sci-Fi / Futuristik
+    elif any(k in style for k in ["holographic", "vaporwave", "isometric", "glitch", "scanline", "rim light", "moonlight", "neon rim"]):
+        return "Neon biru dan ungu, glitch ringan, scanline tipis, glow kuat, efek hologram, bokeh digital"
+
+    # Gaya Tradisional / Budaya
+    elif any(k in style for k in ["traditional", "wood", "carved", "calligraphy", "ethnic", "folk"]):
+        return "Teks terukir di batu atau kayu, tekstur alami, warna tanah atau emas pudar. (Contoh: efek goresan, bayangan dalam)"
+
+    # Gaya Minimalis / Bersih
+    elif any(k in style for k in ["minimal", "line-art", "gradient", "clean", "soft blend", "pastel"]):
+        return "Font minimalis, opacity 30%, tanpa outline. (Contoh: bokeh halus, glow sangat lemah)"
+
+    # Default jika tidak cocok
+    return "Starburst, konfeti, bokeh, glow — sesuaikan dengan gaya visual. (Contoh: neon untuk kartun, alami untuk realistis)"
+    
 # -------------------------------
 # Presets — pack besar
 # -------------------------------
 PRESETS: Dict[str, Dict[str, str]] = {
+    "Orang Asli Indonesia": {
+        "Foreground": "Seorang pria suku Asmat dari Papua, tubuhnya dihiasi lukisan tubuh tradisional merah-hitam, memegang tombak kayu, berdiri di hutan tropis. Ekspresi tenang, tatapan tajam.",
+        "Midground": "Rumah honai tradisional di kejauhan (kiri), wanita Dayak memakai hiasan kepala bulu (kanan), anak-anak bermain di sungai kecil.",
+        "Background": "Hutan hujan Papua yang lebat, kabut pagi, sungai berkelok, pegunungan Jayawijaya samar di langit.",
+        "Floating Elements": "Simbol budaya: 'ASMAT','DAYAK','HONAI','TATU','SIRIH'.",
+        "Central Banner": "Plakat kayu “WARISAN BUDAYA INDONESIA”.",
+        "Text & Effects": "‘BELAJAR BUDAYA LOKAL GRATIS!’ dengan font tradisional, bayangan lembut.",
+        "Background Style": "Lingkungan alam tropis, pencahayaan alami pagi hari.",
+        "Style & Lighting": "Photorealistic, DSLR f/1.8, natural lighting, hyper-detailed skin texture, cinematic composition."
+    },
+    "Pemandangan Alam Indonesia (Realistis)": {
+        "Foreground": "Danau Toba di pagi hari, air tenang memantulkan langit jingga, perahu nelayan kecil terapung perlahan di tengah danau, kabut tipis mengambang di permukaan.",
+        "Midground": "Pulau Samosir berdiri di tengah danau (kiri), perbukitan hijau dengan sawah berundak (kanan), jalan kecil berkelok di tepi danau.",
+        "Background": "Pegunungan Batak yang berkabut, langit senja dengan awan tipis, cahaya matahari menerobos dari balik puncak.",
+        "Floating Elements": "Ikon alam: 'LAKE','MOUNTAIN','MIST','SUNRISE','BOAT'.",
+        "Central Banner": "Plakat kayu natural “KEINDAHAN ALAM INDONESIA”.",
+        "Text & Effects": "‘JELAJAHI PESONA ALAM TANPA BATAS!’ dengan font serif halus, bayangan alami.",
+        "Background Style": "Lanskap alam tropis, udara segar, cahaya alami pagi hari, refleksi air yang jernih.",
+        "Style & Lighting": "Photorealistic, DSLR 8K, f/16 aperture, golden hour lighting, hyper-detailed water and rock texture, environmental realism."
+    },
+    "Petani Vietnam (Asia)": {
+        "Foreground": "Seorang petani wanita Vietnam memakai topi daun nangka, sedang menanam padi di sawah berundak, kakinya berlumpur, wajah berkeringat.",
+        "Midground": "Kerbau menarik bajak (kiri), rumah bambu di bukit (kanan), burung bangau terbang rendah.",
+        "Background": "Pegunungan Sapa berawan, sawah menghijau, sinar matahari pagi menerobos kabut.",
+        "Floating Elements": "Ikon: 'RICE','BAMBOO','HAT','WATER BUFFALO','TERRACE'.",
+        "Central Banner": "Neon kayu “KEHIDUPAN DI SAWAH VIETNAM”.",
+        "Text & Effects": "‘BELAJAR BUDAYA PETANI ASIA!’ dengan efek bayangan alami.",
+        "Background Style": "Pemandangan pedesaan Asia Tenggara, udara segar, embun pagi.",
+        "Style & Lighting": "Documentary Style, natural lighting, shallow depth of field, 8K resolution."
+    },
+    
+    "Penari Bharatanatyam (India)": {
+        "Foreground": "Seorang penari wanita India memakai sari emas dan perhiasan tradisional, pose tangan klasik, mata dilukis tebal, berdiri di panggung batu kuno.",
+        "Midground": "Penabuh tabla (kiri), guru musik duduk bersila (kanan), bunga teratai di lantai.",
+        "Background": "Kuil Hindu berukir, cahaya lilin, langit senja oranye.",
+        "Floating Elements": "Lambang: 'DANCE','TEMPLE','SARI','MUDRA','DEVI'.",
+        "Central Banner": "Papan kayu “SENI TARI BHARATANATYAM”.",
+        "Text & Effects": "‘BELAJAR SENI TRADISIONAL INDIA!’ dengan efek cahaya lilin.",
+        "Background Style": "Lingkungan kuil kuno, suasana sakral, pencahayaan dramatis.",
+        "Style & Lighting": "Cinematic Realism, soft spotlight, detailed facial expression, film grain."
+    },
+    
+    "Petualang Mongolia (Asia Tengah)": {
+        "Foreground": "Seorang pria Mongolia berjaket kulit tebal, duduk di atas kuda di padang rumput luas, memegang cangkir teh susu, angin menerbangkan rambutnya.",
+        "Midground": "Yurt tradisional (kiri), kawanan domba (kanan), elang terbang tinggi.",
+        "Background": "Padang stepa Mongolia yang luas, pegunungan jauh, langit biru tanpa awan.",
+        "Floating Elements": "Simbol: 'HORSE','YURT','STEPPE','EAGLE','MILK TEA'.",
+        "Central Banner": "Neon kayu “HIDUP DI PADANG RUMPUT MONGOLIA”.",
+        "Text & Effects": "‘BELAJAR BUDAYA NOMADIK!’ dengan efek angin halus.",
+        "Background Style": "Lanskap alam terbuka, cahaya alami siang hari.",
+        "Style & Lighting": "Environmental Realism, natural sunlight, wind motion blur, ultra-detailed fabric texture."
+    },
+    
+    "Petani Prancis (Eropa)": {
+        "Foreground": "Seorang petani tua Prancis memakai topi jerami dan kaus bergaris, memetik anggur di kebun anggur Provence, keriput di wajahnya terlihat jelas.",
+        "Midground": "Traktor tua (kiri), anjing peliharaan mengikutinya (kanan), baris tanaman anggur.",
+        "Background": "Bukit beranggur, rumah pedesaan berbatu, langit biru cerah.",
+        "Floating Elements": "Ikon: 'WINE','VINEYARD','HAT','DOG','SUN'.",
+        "Central Banner": "Papan kayu “KEBUN ANGGUR PROVENCE”.",
+        "Text & Effects": "‘BELAJAR BUDAYA PETANI EROPA!’ dengan font klasik.",
+        "Background Style": "Pedesaan Prancis, cuaca cerah, bau tanah dan anggur.",
+        "Style & Lighting": "Natural Lighting Portrait, soft golden hour, fine skin texture, DSLR quality."
+    },
+    
+    "Penenun Ghana (Afrika)": {
+        "Foreground": "Seorang wanita Ghana sedang menenun kain Kente warna-warni di alat tenun tradisional, rambutnya dikepang rapi, gelang kaki berdenting.",
+        "Midground": "Anak-anak bermain di tanah (kiri), pasar tradisional (kanan), kain jemuran.",
+        "Background": "Desa Afrika Barat, rumah lumpur, pohon kelapa, langit jingga senja.",
+        "Floating Elements": "Motif: 'KENTE','WEAVE','AFRICA','PATTERN','TRADITION'.",
+        "Central Banner": "Plakat kayu “WARISAN TENUN AFRIKA”.",
+        "Text & Effects": "‘BELAJAR SENI TENUN AFRIKA!’ dengan efek warna cerah.",
+        "Background Style": "Lingkungan desa Afrika, suasana hangat, pencahayaan alami.",
+        "Style & Lighting": "Ethnographic Realism, ambient daylight, detailed fabric weave, 8K resolution."
+    },
+    
+    "Penjaga Laut Aborigin (Australia)": {
+        "Foreground": "Seorang pria Aborigin tua, tubuhnya dihiasi lukisan suci, memegang boomerang, berdiri di tepi gurun merah, memandang ke arah matahari terbenam.",
+        "Midground": "Waratah (bunga nasional) (kiri), kanguru melintas (kanan), lukisan batu kuno.",
+        "Background": "Gurun Outback, formasi Uluru di kejauhan, langit ungu-merah.",
+        "Floating Elements": "Simbol: 'DREAMTIME','BOOMERANG','ULURU','KANGAROO','ART'.",
+        "Central Banner": "Neon batu “WARISAN SPIRITUAL ABORIGIN”.",
+        "Text & Effects": "‘BELAJAR BUDAYA PERTAMA DI DUNIA!’ dengan efek debu halus.",
+        "Background Style": "Gurun alami, tanah merah, langit dramatis.",
+        "Style & Lighting": "Fine Art Realism, oil painting texture, rim light senja, museum-grade detail."
+    }
     "Petualangan Luar Angkasa": {
         "Foreground": "Panda astronot berani melambaikan bendera di batu bulan (tengah-bawah), gurita alien kecil mengambang tanpa gravitasi di sampingnya.",
         "Midground": "Anjing robot biru melompat lambat (kiri), pesawat ruang angkasa berbentuk komet melintas; burung alien merah melayang dengan jejak debu bintang.",
@@ -280,25 +395,40 @@ PRESETS: Dict[str, Dict[str, str]] = {
 }
 
 STYLE_PRESETS: List[str] = [
+    # --- Gaya Kartun & Ilustrasi ---
     "3D Pixar (ekspresi besar, outline neon, ultra tajam)",
     "Claymation 3D (tekstur tanah liat, lighting studio)",
     "Low-poly 3D pastel (bentuk sederhana)",
     "Watercolor cartoon (aquarel lembut)",
     "Neon playful (glow rim light, warna cerah)",
     "Ghibli-soft (warna natural, ambient warm)",
+    "Halftone comic (tekstur titik komik)",
+    "Kawaii chibi (proporsi imut)",
+    "Line-art minimal (clean strokes)",
+    "Papercraft layered 3D (kertas berlapis)",
+
+    # --- Gaya Realistis & Natural ---
+    "Photorealistic (ultra-detailed, natural skin texture, cinematic lighting)",
+    "DSLR Photography (f/1.8 aperture, shallow depth of field, ambient daylight)",
+    "Hyperrealistic (8K resolution, micro-details, realistic pores and hair)",
+    "Natural Lighting Portrait (soft window light, no flash, warm tone)",
+    "Cinematic Realism (film grain, 35mm, dramatic shadows, realistic atmosphere)",
+    "Documentary Style (on-location, natural expressions, candid moment)",
+    "Studio Portrait (professional lighting, softbox, clean background)",
+    "Environmental Realism (orang asli di habitat alami, pencahayaan alami)",
+    "Ethnographic Realism (detail budaya, pakaian tradisional, ekspresi wajar)",
+    "Fine Art Realism (oil painting style, brush texture, museum-grade detail)",
+
+    # --- Gaya Material & Render ---
     "Plastic toy render (material mengkilap, HDRI studio)",
     "Isometric 3D city (geometri rapi)",
     "Voxel art (blok piksel 3D)",
     "Gouache illustration (kuas tebal)",
-    "Halftone comic (tekstur titik komik)",
     "Chalkboard school (tulisan kapur)",
     "Pastel gradient minimal (soft blend)",
     "Holographic chrome (reflective, iridescent)",
     "Retro vaporwave (grid, neon sunset)",
-    "Kawaii chibi (proporsi imut)",
-    "Line-art minimal (clean strokes)",
-    "PBR realistic toy (material realistis)",
-    "Papercraft layered 3D (kertas berlapis)",
+    "PBR realistic toy (material realistis)"
 ]
 
 # -------------------------------
@@ -597,6 +727,7 @@ with c1:
 with c2:
     fl = st.text_area("Floating Elements", value=st.session_state["Floating Elements"], height=90, help="Balon, tulisan, ikon, gelembung.")
     cb = st.text_area("Central Banner", value=st.session_state["Central Banner"], height=80, help="Pesan utama + gaya.")
+    suggested_te = get_suggested_text_effects(current_style)
     te = st.text_area("Text & Effects", value=st.session_state["Text & Effects"], height=80, help="Starburst, konfeti, bokeh, glow.")
     bs = st.text_area("Background Style", value=st.session_state["Background Style"], height=80, help="Bokeh, gradien, pola.")
     sl = st.text_area("Style & Lighting", value=st.session_state["Style & Lighting"], height=110, placeholder=style_bias)
