@@ -753,3 +753,5 @@ with st.container(height=400, border=True):
                     st.markdown('</div>', unsafe_allow_html=True)
 
 st.caption("v3.1 • All fixes created @effands feat Ai | create August 2025  |  wa 0856 4990 5055")
+st.caption("🙏 Terima Kasih/n
+Dibuat dengan ❤️ untuk kreator Indonesia")
