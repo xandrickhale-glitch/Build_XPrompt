@@ -52,37 +52,7 @@ def _call_gemini(prompt: str, model_name: str, api_key: str) -> str:
                 raise Exception("❌ **Gagal koneksi ke Gemini.** Periksa internet atau coba lagi nanti.")
             else:
                 raise Exception(f"❌ **Gagal memanggil Gemini:**\n\n`{str(e2)}`")
-                
-def get_suggested_text_effects(style_lighting: str) -> str:
-    """
-    Berikan saran otomatis untuk Text & Effects berdasarkan Style & Lighting.
-    Menyertakan kata kunci umum seperti Starburst, konfeti, bokeh, glow.
-    """
-    style = style_lighting.lower()
-
-    # Gaya Realistis / Natural / Fotografi
-    if any(k in style for k in ["photorealistic", "dslr", "8k", "natural", "realistic", "documentary", "portrait", "cinematic", "environmental", "fine art", "ethnographic"]):
-        return "Tidak ada efek tambahan. Fokus pada subjek dan lingkungan. (Contoh: bayangan alami, watermark halus)"
-
-    # Gaya Kartun / Anak-Anak / 3D
-    elif any(k in style for k in ["3d pixar", "claymation", "kawaii", "chibi", "neon", "playful", "watercolor", "gouache", "papercraft", "halftone", "comic"]):
-        return "Starburst, konfeti pelangi, bintang berkedip, neon glow, bokeh lembut, efek ledakan kecil"
-
-    # Gaya Malam / Sci-Fi / Futuristik
-    elif any(k in style for k in ["holographic", "vaporwave", "isometric", "glitch", "scanline", "rim light", "moonlight", "neon rim"]):
-        return "Neon biru dan ungu, glitch ringan, scanline tipis, glow kuat, efek hologram, bokeh digital"
-
-    # Gaya Tradisional / Budaya
-    elif any(k in style for k in ["traditional", "wood", "carved", "calligraphy", "ethnic", "folk"]):
-        return "Teks terukir di batu atau kayu, tekstur alami, warna tanah atau emas pudar. (Contoh: efek goresan, bayangan dalam)"
-
-    # Gaya Minimalis / Bersih
-    elif any(k in style for k in ["minimal", "line-art", "gradient", "clean", "soft blend", "pastel"]):
-        return "Font minimalis, opacity 30%, tanpa outline. (Contoh: bokeh halus, glow sangat lemah)"
-
-    # Default jika tidak cocok
-    return "Starburst, konfeti, bokeh, glow — sesuaikan dengan gaya visual. (Contoh: neon untuk kartun, alami untuk realistis)"
-    
+                    
 # -------------------------------
 # Presets — pack besar
 # -------------------------------
@@ -572,6 +542,36 @@ KEY_ALIASES = {
     "style & lighting": "Style & Lighting", "gaya & pencahayaan": "Style & Lighting",
 }
 
+def get_suggested_text_effects(style_lighting: str) -> str:
+    """
+    Berikan saran otomatis untuk Text & Effects berdasarkan Style & Lighting.
+    Menyertakan kata kunci umum seperti Starburst, konfeti, bokeh, glow.
+    """
+    style = style_lighting.lower()
+
+    # Gaya Realistis / Natural / Fotografi
+    if any(k in style for k in ["photorealistic", "dslr", "8k", "natural", "realistic", "documentary", "portrait", "cinematic", "environmental", "fine art", "ethnographic"]):
+        return "Tidak ada efek tambahan. Fokus pada subjek dan lingkungan. (Contoh: bayangan alami, watermark halus)"
+
+    # Gaya Kartun / Anak-Anak / 3D
+    elif any(k in style for k in ["3d pixar", "claymation", "kawaii", "chibi", "neon", "playful", "watercolor", "gouache", "papercraft", "halftone", "comic"]):
+        return "Starburst, konfeti pelangi, bintang berkedip, neon glow, bokeh lembut, efek ledakan kecil"
+
+    # Gaya Malam / Sci-Fi / Futuristik
+    elif any(k in style for k in ["holographic", "vaporwave", "isometric", "glitch", "scanline", "rim light", "moonlight", "neon rim"]):
+        return "Neon biru dan ungu, glitch ringan, scanline tipis, glow kuat, efek hologram, bokeh digital"
+
+    # Gaya Tradisional / Budaya
+    elif any(k in style for k in ["traditional", "wood", "carved", "calligraphy", "ethnic", "folk"]):
+        return "Teks terukir di batu atau kayu, tekstur alami, warna tanah atau emas pudar. (Contoh: efek goresan, bayangan dalam)"
+
+    # Gaya Minimalis / Bersih
+    elif any(k in style for k in ["minimal", "line-art", "gradient", "clean", "soft blend", "pastel"]):
+        return "Font minimalis, opacity 30%, tanpa outline. (Contoh: bokeh halus, glow sangat lemah)"
+
+    # Default jika tidak cocok
+    return "Starburst, konfeti, bokeh, glow — sesuaikan dengan gaya visual. (Contoh: neon untuk kartun, alami untuk realistis)"
+
 def parse_sections(text: str) -> Dict[str, str]:
     """
     Parse teks prompt (ID/EN) menjadi bagian-bagian struktur.
@@ -719,6 +719,11 @@ for key in FIELD_KEYS:
 
 # Builder (compact)
 st.subheader("🧱 Builder Detail")
+# Ambil nilai terbaru dari session_state
+current_style = st.session_state["Style & Lighting"]
+
+# Dapatkan saran
+suggested_te = get_suggested_text_effects(current_style)
 c1, c2 = st.columns(2)
 with c1:
     fg = st.text_area("Foreground", value=st.session_state["Foreground"], height=110, help="Karakter/objek utama + pose + posisi.")
@@ -727,7 +732,6 @@ with c1:
 with c2:
     fl = st.text_area("Floating Elements", value=st.session_state["Floating Elements"], height=90, help="Balon, tulisan, ikon, gelembung.")
     cb = st.text_area("Central Banner", value=st.session_state["Central Banner"], height=80, help="Pesan utama + gaya.")
-    suggested_te = get_suggested_text_effects(current_style)
     te = st.text_area("Text & Effects", value=st.session_state["Text & Effects"], height=80, help="Starburst, konfeti, bokeh, glow.")
     bs = st.text_area("Background Style", value=st.session_state["Background Style"], height=80, help="Bokeh, gradien, pola.")
     sl = st.text_area("Style & Lighting", value=st.session_state["Style & Lighting"], height=110, placeholder=style_bias)
