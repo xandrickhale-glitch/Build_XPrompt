@@ -463,64 +463,49 @@ def translate_to_english(text_id: str, api_key: str, model: str) -> str:
         if not api_key or not text_id.strip():
             return text_id
         
-        # 1. Pisahkan prompt menjadi bagian-bagian berdasarkan label
-        sections = {}
-        current_label = None
+        # Instruksi yang lebih ketat dan spesifik
+        instr = (
+            "TRANSLATION TASK: Translate ONLY the content of this structured prompt to English. "
+            "DO NOT add any explanations, notes, or alternative translations. "
+            "DO NOT add any new sections or text outside the prompt structure. "
+            "DO NOT break the format. "
+            "PRESERVE the exact order of sections. "
+            "OUTPUT ONLY the translated prompt in the same format.\n\n"
+            "Convert section labels to EXACTLY these English equivalents:\n"
+            "- 'Latar Depan:' → 'Foreground:'\n"
+            "- 'Lapisan Tengah:' → 'Midground:'\n"
+            "- 'Latar Belakang:' → 'Background:'\n"
+            "- 'Elemen Mengambang:' → 'Floating Elements:'\n"
+            "- 'Papan Utama:' → 'Central Banner:'\n"
+            "- 'Teks & Efek:' → 'Text & Effects:'\n"
+            "- 'Gaya Latar:' → 'Background Style:'\n"
+            "- 'Gaya & Pencahayaan:' → 'Style & Lighting:'\n\n"
+            "Here is the prompt to translate:"
+        )
         
-        for line in text_id.split('\n'):
-            line = line.strip()
-            if not line:
-                continue
-                
-            # Cek apakah baris ini adalah label bagian
-            found_label = False
-            for label in ["Latar Depan", "Lapisan Tengah", "Latar Belakang", 
-                          "Elemen Mengambang", "Papan Utama", "Teks & Efek", 
-                          "Gaya Latar", "Gaya & Pencahayaan"]:
-                if line.startswith(label):
-                    current_label = label
-                    sections[current_label] = line[len(label):].lstrip(':').strip()
-                    found_label = True
-                    break
-            
-            # Jika bukan label baru, tambahkan ke bagian terakhir
-            if not found_label and current_label:
-                sections[current_label] += " " + line
+        payload = f"{instr}\n{text_id}"
+        response = _call_gemini(payload, model, api_key)
         
-        # 2. Mapping label Indonesia ke Inggris
-        label_map = {
-            "Latar Depan": "Foreground",
-            "Lapisan Tengah": "Midground",
-            "Latar Belakang": "Background",
-            "Elemen Mengambang": "Floating Elements",
-            "Papan Utama": "Central Banner",
-            "Teks & Efek": "Text & Effects",
-            "Gaya Latar": "Background Style",
-            "Gaya & Pencahayaan": "Style & Lighting"
-        }
+        # Bersihkan respons dari penjelasan tambahan
+        # Ambil hanya bagian yang sesuai dengan struktur prompt
+        lines = response.split('\n')
+        valid_sections = [
+            "Foreground:", "Midground:", "Background:", 
+            "Floating Elements:", "Central Banner:", 
+            "Text & Effects:", "Background Style:", 
+            "Style & Lighting:", "Camera:", "Rendering:", "Lighting:"
+        ]
         
-        # 3. Terjemahkan konten setiap bagian
-        translated = []
-        for id_label, content in sections.items():
-            en_label = label_map.get(id_label, id_label)
-            
-            # Terjemahkan konten jika bukan kosong
-            if content.strip():
-                translation = _call_gemini(
-                    f"Terjemahkan ke bahasa Inggris: {content}", 
-                    model, 
-                    api_key
-                )
-                translated.append(f"{en_label}: {translation.strip()}")
-            else:
-                translated.append(f"{en_label}:")
+        cleaned_lines = []
+        for line in lines:
+            # Hanya ambil baris yang merupakan bagian dari prompt
+            if any(line.startswith(section) for section in valid_sections):
+                cleaned_lines.append(line)
+            # Hentikan jika menemukan penjelasan tambahan
+            elif line.strip().startswith("**") or "Option" in line:
+                break
         
-        # 4. Tambahkan bagian toggles yang sudah dalam bahasa Inggris
-        for line in text_id.split('\n'):
-            if any(toggle in line for toggle in ["Camera:", "Rendering:", "Lighting:"]):
-                translated.append(line.strip())
-        
-        return "\n".join(translated)
+        return "\n".join(cleaned_lines)
         
     except Exception as e:
         st.warning(f"Terjemahan gagal: {e}")
