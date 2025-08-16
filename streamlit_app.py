@@ -462,15 +462,70 @@ def translate_to_english(text_id: str, api_key: str, model: str) -> str:
     try:
         if not api_key or not text_id.strip():
             return text_id
-        instr = ("Translate the following structured prompt to natural English. "
-                 "Convert section labels to EXACTLY these: Foreground, Midground, Background, Floating Elements, Central Banner, Text & Effects, Background Style, Style & Lighting. "
-                 "Preserve order and details. Do not add commentary.")
-        payload = f"{instr}\n{text_id}"
-        return _call_gemini(payload, model, api_key)
+        
+        # 1. Pisahkan prompt menjadi bagian-bagian berdasarkan label
+        sections = {}
+        current_label = None
+        
+        for line in text_id.split('\n'):
+            line = line.strip()
+            if not line:
+                continue
+                
+            # Cek apakah baris ini adalah label bagian
+            found_label = False
+            for label in ["Latar Depan", "Lapisan Tengah", "Latar Belakang", 
+                          "Elemen Mengambang", "Papan Utama", "Teks & Efek", 
+                          "Gaya Latar", "Gaya & Pencahayaan"]:
+                if line.startswith(label):
+                    current_label = label
+                    sections[current_label] = line[len(label):].lstrip(':').strip()
+                    found_label = True
+                    break
+            
+            # Jika bukan label baru, tambahkan ke bagian terakhir
+            if not found_label and current_label:
+                sections[current_label] += " " + line
+        
+        # 2. Mapping label Indonesia ke Inggris
+        label_map = {
+            "Latar Depan": "Foreground",
+            "Lapisan Tengah": "Midground",
+            "Latar Belakang": "Background",
+            "Elemen Mengambang": "Floating Elements",
+            "Papan Utama": "Central Banner",
+            "Teks & Efek": "Text & Effects",
+            "Gaya Latar": "Background Style",
+            "Gaya & Pencahayaan": "Style & Lighting"
+        }
+        
+        # 3. Terjemahkan konten setiap bagian
+        translated = []
+        for id_label, content in sections.items():
+            en_label = label_map.get(id_label, id_label)
+            
+            # Terjemahkan konten jika bukan kosong
+            if content.strip():
+                translation = _call_gemini(
+                    f"Terjemahkan ke bahasa Inggris: {content}", 
+                    model, 
+                    api_key
+                )
+                translated.append(f"{en_label}: {translation.strip()}")
+            else:
+                translated.append(f"{en_label}:")
+        
+        # 4. Tambahkan bagian toggles yang sudah dalam bahasa Inggris
+        for line in text_id.split('\n'):
+            if any(toggle in line for toggle in ["Camera:", "Rendering:", "Lighting:"]):
+                translated.append(line.strip())
+        
+        return "\n".join(translated)
+        
     except Exception as e:
         st.warning(f"Terjemahan gagal: {e}")
         return text_id
-
+        
 # -------------------------------
 # Streamlit UI
 # -------------------------------
@@ -813,7 +868,7 @@ with co1:
 with co2:
     st.markdown("#### 🇬🇧 Versi Inggris")
     st.markdown('<div class="dialog-card">', unsafe_allow_html=True)
-    text_en = st.session_state.get("base_prompt_en", "").strip()
+    text_en = auto_en.strip()
     if not text_en:  # Jika belum pernah dibuat
         if api_key or os.getenv("GEMINI_API_KEY"):
             text_en = translate_to_english(base_prompt_id, api_key or "", model)
