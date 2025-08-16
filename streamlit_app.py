@@ -460,7 +460,7 @@ def compose_prompt_localized(fields: Dict[str, str], toggles: Dict[str, bool], l
 
 def translate_to_english(text_id: str, api_key: str, model: str) -> str:
     try:
-        if not api_key:
+        if not api_key or not text_id.strip():
             return text_id
         instr = ("Translate the following structured prompt to natural English. "
                  "Convert section labels to EXACTLY these: Foreground, Midground, Background, Floating Elements, Central Banner, Text & Effects, Background Style, Style & Lighting. "
@@ -820,7 +820,7 @@ with co2:
         else:
             text_en = "(Inggris: API Key diperlukan untuk terjemahan)"
     st.code(text_en or "(empty)", language="text")
-    one_line_en = re.sub(r'\s+', ' ', text_en or '').strip()
+    one_line_en = re.sub(r'\s+', ' ', auto_en or '').strip()
     st.markdown("**One-line (EN):**")
     st.code(one_line_en or "(empty)", language="text")
     st.markdown('</div>', unsafe_allow_html=True)
@@ -839,7 +839,7 @@ st.markdown('</div>', unsafe_allow_html=True)
 # Downloads
 from io import StringIO
 id_stream = StringIO(text_id or "")
-en_stream = StringIO(text_en or "")
+en_stream = StringIO(auto_en or "")
 one_id_stream = StringIO(one_line_id or "")
 one_en_stream = StringIO(one_line_en or "")
 enh_stream = StringIO(st.session_state.get("enhanced_prompt_en", ""))
