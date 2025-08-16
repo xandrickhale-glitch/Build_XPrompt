@@ -761,6 +761,7 @@ with b3:
 if gen_clicked:
     st.session_state["base_prompt_id"] = base_prompt_id
     st.session_state["base_prompt_en"] = base_prompt_en
+    st.session_state["auto_translated_en"] = ""  # Reset terjemahan lama
     st.success("Prompt dibuat.")
 
 if enh_clicked:
@@ -812,7 +813,12 @@ with co1:
 with co2:
     st.markdown("#### 🇬🇧 Versi Inggris")
     st.markdown('<div class="dialog-card">', unsafe_allow_html=True)
-    text_en = st.session_state.get("base_prompt_en", auto_en)
+    text_en = st.session_state.get("base_prompt_en", "").strip()
+    if not text_en:  # Jika belum pernah dibuat
+        if api_key or os.getenv("GEMINI_API_KEY"):
+            text_en = translate_to_english(base_prompt_id, api_key or "", model)
+        else:
+            text_en = "(Inggris: API Key diperlukan untuk terjemahan)"
     st.code(text_en or "(empty)", language="text")
     one_line_en = re.sub(r'\s+', ' ', text_en or '').strip()
     st.markdown("**One-line (EN):**")
